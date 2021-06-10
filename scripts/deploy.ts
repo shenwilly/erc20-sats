@@ -1,10 +1,12 @@
 import { ethers } from "hardhat";
+import { WBTC_ADDRESS_MAINNET } from "../test/helpers/constants";
+import { SatsV1__factory } from "../typechain";
 
 async function main() {
-  const factory = await ethers.getContractFactory("Counter");
+  const factory = (await ethers.getContractFactory("SatsV1")) as SatsV1__factory;
 
   // If we had constructor arguments, they would be passed into deploy()
-  let contract = await factory.deploy();
+  let contract = await factory.deploy(WBTC_ADDRESS_MAINNET);
 
   // The address the Contract WILL have once mined
   console.log(contract.address);
