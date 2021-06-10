@@ -1,0 +1,2 @@
+export const WBTC_ADDRESS_MAINNET = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
+export const WBTC_WHALE_ADDRESS = "0xb82b49312f7215d8db146ee73999b001d7b7f2c9";

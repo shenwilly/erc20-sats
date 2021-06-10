@@ -5,3 +5,6 @@ typechain/
 artifacts/
 coverage*
 .env
+.DS_Store
+yarn.lock
+.vscode/settings.json
