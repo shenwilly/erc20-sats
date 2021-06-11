@@ -8,7 +8,7 @@ const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider
 
     const getBalance = async (provider) => {
         let balance = await provider.getBalance(address);
-        setBalance(truncate(formatEther(balance), 4));
+        setBalance(truncateBalance(formatEther(balance), 4));
     }
 
     useEffect(() => {
@@ -49,13 +49,17 @@ const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider
         }
     }
 
-    function truncate(str, maxDecimalDigits) {
+    function truncateBalance(str, maxDecimalDigits) {
         if (str.includes('.')) {
             const parts = str.split('.');
             return parts[0] + '.' + parts[1].slice(0, maxDecimalDigits);
         }
         return str;
-    }    
+    }
+
+    function truncateAddress(str) {
+        return str.substr(0, 5) + "..." + str.substr(str.length - 4, 5);
+    }
 
     return (
         <Flex align="center">
@@ -68,12 +72,14 @@ const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider
                     </Box>
                     <Box px="2">
                         <Text>
-                            {address}
+                            {truncateAddress(address)}
                         </Text>
                     </Box>
                 </>)
             }
-            {modalButton}
+            <Box ml="2">
+                {modalButton}
+            </Box>
         </Flex>
     );
 };
