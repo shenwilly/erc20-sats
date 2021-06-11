@@ -2,27 +2,26 @@ import { useEffect, useState } from "react";
 import { formatEther } from "@ethersproject/units";
 import { Button, Box, Flex, Text } from "@chakra-ui/react"
 
-const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider }) => {
+const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, account }) => {
     const [ address, setAddress ] = useState("");
     const [ balance, setBalance ] = useState("-");
 
     useEffect(() => {
-        const fetchAddress = async (provider) => {
-          const signer = provider.getSigner(0);
-          setAddress(await signer.getAddress());
+        const fetchAddress = async (account) => {
+          setAddress(await account.getAddress());
         }
 
-        if (injectedProvider) {
-            fetchAddress(injectedProvider);
+        if (account) {
+            fetchAddress(account);
         }
-    }, [injectedProvider]);
+    }, [account]);
 
     useEffect(() => {
         const getBalance = async (provider) => {
             let balance = await provider.getBalance(address);
             setBalance(truncateBalance(formatEther(balance), 4));
         }
-        
+
         if (injectedProvider && address) {
             injectedProvider.on("block", (_) => {
                 getBalance(injectedProvider);

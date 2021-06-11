@@ -3,7 +3,7 @@ import Account from "../Account"
 import useWeb3 from "../../hooks/useWeb3"
 
 const Header = () => {
-    const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider } = useWeb3()
+    const { web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, account } = useWeb3()
 
     return (
         <Container maxW="container.xl">
@@ -15,7 +15,8 @@ const Header = () => {
                         web3Modal={web3Modal}
                         loadWeb3Modal={loadWeb3Modal}
                         logoutOfWeb3Modal={logoutOfWeb3Modal}
-                        injectedProvider={injectedProvider}/>
+                        injectedProvider={injectedProvider}
+                        account={account}/>
                 </Box>
             </Flex>
         </Container>
