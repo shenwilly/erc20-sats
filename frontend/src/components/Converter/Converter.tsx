@@ -4,8 +4,10 @@ import styled from "styled-components";
 import InputWbtc from "../InputCustom/variants/InputWbtc"
 import InputSats from "../InputCustom/variants/InputSats"
 import { useState } from "react";
+import userSats from "../../hooks/useSats";
 
 const Converter = () => {
+    const { wbtcBalance, satsBalance } = userSats();
     const [ btcValue, setBtcValue ] = useState("");
     const [ satsValue, setSatsValue ] = useState("");
     const [ isBtcToSats, setIsBtcToSats ] = useState<boolean>(true);
@@ -22,11 +24,11 @@ const Converter = () => {
                 ? <InputWbtc 
                     value={btcValue}
                     onChange={e => setBtcValue(e.target.value)}
-                    balanceText="0.1 BTC" />
+                    balanceText={`${wbtcBalance || '-'} WBTC`} />
                 : <InputSats 
                     value={satsValue}
                     onChange={e => setSatsValue(e.target.value)}
-                    balanceText="100.000 SATS" />}
+                    balanceText={`${satsBalance || '-'} SATS`} />}
 
             <SwapButton p="2" my="4" variant="ghost" onClick={() => setIsBtcToSats(!isBtcToSats)}>
                 <MdSwapVert size="1.5em"/>
@@ -36,11 +38,11 @@ const Converter = () => {
                 ? <InputWbtc 
                     value={btcValue}
                     onChange={e => setBtcValue(e.target.value)}
-                    balanceText="0.1 BTC" />
+                    balanceText={`${wbtcBalance || '-'} WBTC`} />
                 : <InputSats 
                     value={satsValue}
                     onChange={e => setSatsValue(e.target.value)}
-                    balanceText="100.000 SATS" />}
+                    balanceText={`${satsBalance || '-'} SATS`} />}
                     
             <Button size="lg" colorScheme="orange" mt="60px" minW="200px" onClick={handleClick}>
                 {isBtcToSats 

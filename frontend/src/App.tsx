@@ -50,7 +50,7 @@ const FooterWrapper = styled.div`
 const BtcSatsExchangeRateBox = () => (
   <Box display="block" bg="orange" py="2" px="3" borderRadius="5" mb="5" mt="10">
   <Text fontWeight="bold">
-      1 BTC = 100.000.000 $SATS
+      1 $WBTC = 100,000,000 $SATS
   </Text>
   </Box>
 )
