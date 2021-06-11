@@ -1,18 +1,25 @@
 import React from "react"
-import { Container, ChakraProvider } from "@chakra-ui/react"
+import { Container, Box, Text, Stack, Center, ChakraProvider } from "@chakra-ui/react"
 import styled, { ThemeProvider } from "styled-components";
 import { web3Modal } from "./utils/web3modal";
-import Header from "./components/Header"
 import { Web3Provider } from "./contexts/Web3"
+import theme from "./utils/theme"
+import Header from "./components/Header"
 import Footer from "./components/Footer";
+import Converter from "./components/Converter";
 
 function App() {
   return (
     <SiteWrapper>
-      <Header />
-      <Container maxW="container.xl">
-        
-      </Container>
+      <HeaderWrapper>
+        <Header />
+      </HeaderWrapper>
+      <BodyWrapper maxW="container.xl" display="flex" alignItems="start" justifyContent="center">
+        <Stack alignItems="center">
+          <BtcSatsExchangeRateBox />
+          <Converter />
+        </Stack>
+      </BodyWrapper>
       <FooterWrapper>
         <Footer />
       </FooterWrapper>
@@ -26,11 +33,27 @@ const SiteWrapper = styled.div`
   overflow-y: scroll;
 `;
 
+const HeaderWrapper = styled(Center)`
+  height: 60px;
+`;
+
+const BodyWrapper = styled(Container)`
+  height: calc(100vh - 60px);
+`;
+
 const FooterWrapper = styled.div`
   position: fixed;
   bottom: 15px;
   left: 0;
 `;
+
+const BtcSatsExchangeRateBox = () => (
+  <Box display="block" bg="orange" py="2" px="3" borderRadius="5" mb="5" mt="10">
+  <Text fontWeight="bold">
+      1 BTC = 100.000.000 $SATS
+  </Text>
+  </Box>
+)
 
 window.ethereum &&
   window.ethereum.on("chainChanged", () => {
@@ -49,13 +72,13 @@ window.ethereum &&
   });
 
 const Providers: React.FC = ({ children }) => {
-  const theme = {
+  const styledTheme = {
     
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <ChakraProvider>
+    <ThemeProvider theme={styledTheme}>
+      <ChakraProvider theme={theme}>
         <Web3Provider>
           {children}
         </Web3Provider>
