@@ -1,18 +1,21 @@
 import React from "react"
-import { Container, Box, ChakraProvider } from "@chakra-ui/react"
+import { Container, ChakraProvider } from "@chakra-ui/react"
 import styled, { ThemeProvider } from "styled-components";
 import { web3Modal } from "./utils/web3modal";
-// import Header from "./components/Header"
-// import { Web3Provider } from "./contexts/Web3"
+import Header from "./components/Header"
+import { Web3Provider } from "./contexts/Web3"
+import Footer from "./components/Footer";
 
 function App() {
   return (
     <SiteWrapper>
+      <Header />
       <Container maxW="container.xl">
-        <Box>
-          SATS
-        </Box>
+        
       </Container>
+      <FooterWrapper>
+        <Footer />
+      </FooterWrapper>
     </SiteWrapper>
   );
 }
@@ -21,7 +24,12 @@ const SiteWrapper = styled.div`
   width: 100vw;
   height: 100vh;
   overflow-y: scroll;
-  background-color: lightgrey;
+`;
+
+const FooterWrapper = styled.div`
+  position: fixed;
+  bottom: 15px;
+  left: 0;
 `;
 
 window.ethereum &&
@@ -48,11 +56,9 @@ const Providers: React.FC = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
       <ChakraProvider>
-        {/* <ApolloProvider client={client}> */}
-          {/* <Web3Provider> */}
-            {children}
-          {/* </Web3Provider> */}
-        {/* </ApolloProvider> */}
+        <Web3Provider>
+          {children}
+        </Web3Provider>
       </ChakraProvider>
     </ThemeProvider>
   );
