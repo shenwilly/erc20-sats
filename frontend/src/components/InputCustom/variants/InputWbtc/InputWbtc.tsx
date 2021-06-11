@@ -16,7 +16,6 @@ const InputWbtc: React.FC<InputWbtcProps> = ({ value="", onChange=()=>{}, onClic
         <InputCustom 
             value={value}
             onChange={onChange}
-            placeholder="0.00 WBTC" 
             rightAddon={wbtcLogo}
             balanceText={balanceText}
             onClickText={onClickText}/>

@@ -12,7 +12,7 @@ interface InputCustomProps {
 
 const InputCustom: React.FC<InputCustomProps> = ({ 
     value="", 
-    placeholder="", 
+    placeholder="0.00", 
     balanceText="-", 
     rightAddon, 
     onChange=() => {},
@@ -21,7 +21,7 @@ const InputCustom: React.FC<InputCustomProps> = ({
     return (
         <Box position="relative">
             <InputGroup size="lg">
-                <Input type="input" 
+                <Input type="number" 
                     borderColor="orange"
                     placeholder={placeholder} 
                     value={value}

@@ -1,4 +1,4 @@
-import { Button, Box, SimpleGrid } from "@chakra-ui/react"
+import { Button, Box } from "@chakra-ui/react"
 import { MdSwapVert } from "react-icons/md"
 import styled from "styled-components";
 import InputWbtc from "../InputCustom/variants/InputWbtc"
@@ -9,6 +9,10 @@ const Converter = () => {
     const [ btcValue, setBtcValue ] = useState("");
     const [ satsValue, setSatsValue ] = useState("");
     const [ isBtcToSats, setIsBtcToSats ] = useState<boolean>(true);
+
+    const handleClick = () => {
+
+    }
 
     return (
         <Box textAlign="center" py="5" px="4" 
@@ -23,9 +27,11 @@ const Converter = () => {
                     value={satsValue}
                     onChange={e => setSatsValue(e.target.value)}
                     balanceText="100.000 SATS" />}
+
             <SwapButton p="2" my="4" variant="ghost" onClick={() => setIsBtcToSats(!isBtcToSats)}>
                 <MdSwapVert size="1.5em"/>
             </SwapButton>
+            
             {!isBtcToSats
                 ? <InputWbtc 
                     value={btcValue}
@@ -35,8 +41,12 @@ const Converter = () => {
                     value={satsValue}
                     onChange={e => setSatsValue(e.target.value)}
                     balanceText="100.000 SATS" />}
-            <Button size="lg" colorScheme="orange" mt="60px" minW="200px">
-                Approve
+                    
+            <Button size="lg" colorScheme="orange" mt="60px" minW="200px" onClick={handleClick}>
+                {isBtcToSats 
+                    ? "MINT $SATS"
+                    : "REDEEM WBTC"
+                }
             </Button>
         </Box>
     );

@@ -27,7 +27,6 @@ const InputSats: React.FC<InputSatsProps> = ({ value="", onChange=()=>{}, onClic
         <InputCustom 
             value={value}
             onChange={onChange}
-            placeholder="0.00 SATS" 
             rightAddon={satsLogo}
             balanceText={balanceText}
             onClickText={onClickText}/>
