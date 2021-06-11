@@ -7,6 +7,7 @@ import theme from "./utils/theme"
 import Header from "./components/Header"
 import Footer from "./components/Footer";
 import Converter from "./components/Converter";
+import { SatsProvider } from "./contexts/Sats";
 
 function App() {
   return (
@@ -80,7 +81,9 @@ const Providers: React.FC = ({ children }) => {
     <ThemeProvider theme={styledTheme}>
       <ChakraProvider theme={theme}>
         <Web3Provider>
-          {children}
+          <SatsProvider>
+            {children}
+          </SatsProvider>
         </Web3Provider>
       </ChakraProvider>
     </ThemeProvider>
