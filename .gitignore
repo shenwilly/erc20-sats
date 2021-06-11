@@ -8,3 +8,4 @@ coverage*
 .DS_Store
 yarn.lock
 .vscode/settings.json
+frontend/src/types

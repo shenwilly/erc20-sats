@@ -32,7 +32,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "typechain": "typechain --target=ethers-v5 --out-dir='./src/types' 'src/contracts/abi/*.json'"
   },
   "eslintConfig": {
     "extends": [
@@ -51,5 +52,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typechain/ethers-v5": "^7.0.1",
+    "typechain": "^5.0.0"
   }
 }
