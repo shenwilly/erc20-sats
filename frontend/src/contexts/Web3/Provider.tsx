@@ -6,13 +6,19 @@ import { Signer } from "ethers";
 
 const Provider: React.FC = ({ children }) => {
     const [account, setAccount] = useState<Signer>();
+    const [accountAddress, setAccountAddress] = useState<string>("");
     const [injectedProvider, setInjectedProvider] = useState<Web3Provider>();
 
     const loadWeb3Modal = useCallback(async () => {
         const provider = await web3Modal.connect();
         const web3Provider = new Web3Provider(provider)
         setInjectedProvider(web3Provider);
-        setAccount(web3Provider.getSigner(0));
+
+        const signer = web3Provider.getSigner(0);
+        setAccount(signer);
+
+        const address = await signer.getAddress();
+        setAccountAddress(address);
     }, [setInjectedProvider]);
 
     const logoutOfWeb3Modal = async () => {
@@ -32,6 +38,7 @@ const Provider: React.FC = ({ children }) => {
         <Context.Provider
             value={{
                 account,
+                accountAddress,
                 injectedProvider,
                 web3Modal,
                 loadWeb3Modal,
