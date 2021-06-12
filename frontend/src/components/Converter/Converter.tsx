@@ -3,28 +3,56 @@ import { MdSwapVert } from "react-icons/md"
 import styled from "styled-components";
 import InputWbtc from "../InputCustom/variants/InputWbtc"
 import InputSats from "../InputCustom/variants/InputSats"
-import { useEffect, useState } from "react";
-import userSats from "../../hooks/useSats";
-import { BigNumber } from "ethers";
+import { useCallback, useEffect, useState } from "react";
+import useSats from "../../hooks/useSats";
+import { BigNumber, ContractTransaction } from "ethers";
 import { getAllowance } from "../../utils/web3";
 import { SATS_ADDRESS, WBTC_ADDRESS } from "../../constants";
 import useWeb3 from "../../hooks/useWeb3";
 
 const Converter = () => {
     const { accountAddress, injectedProvider } = useWeb3();
-    const { wbtcBalance, satsBalance } = userSats();
+    const { wbtcBalance, satsBalance, handleApprove } = useSats();
     const [ btcValue, setBtcValue ] = useState("");
     const [ satsValue, setSatsValue ] = useState("");
     const [ isBtcToSats, setIsBtcToSats ] = useState<boolean>(true);
     const [ isLoading, setIsLoading ] = useState(false);
     const [ allowanceApproved, setAllowanceApproved ] = useState(true);
+    const [ validationErrorMsg, setValidationErrorMsg ] = useState("");
 
-    const handleClick = () => {
+    const handleClick = async () => {
+        if (!injectedProvider)
+            return;
 
+        if (allowanceApproved) {
+            // handleMint(
+            //     SATS_ADDRESS, 
+            //     WBTC_ADDRESS, 
+            //     BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+            //     async (tx: ContractTransaction) => {
+            //         // const txReceipt = await injectedProvider.getTransactionReceipt(tx.hash);
+            //         // if (txReceipt && txReceipt.blockNumber) {
+            //         //     checkAllowance()
+            //         // }                    
+            //     }
+            // );
+        } else {
+            handleApprove(
+                SATS_ADDRESS, 
+                WBTC_ADDRESS, 
+                BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                async (tx: ContractTransaction) => {
+                    const txReceipt = await injectedProvider.getTransactionReceipt(tx.hash);
+                    if (txReceipt && txReceipt.blockNumber) {
+                        checkAllowance()
+                    }                    
+                }
+            );
+        }
     }
 
     const changeBtcValue = async (val: string) => {
-        if (val == "") {
+        if (val === "") {
             setBtcValue("");
             setSatsValue("")
         } else {
@@ -34,7 +62,7 @@ const Converter = () => {
     }
 
     const changeSatsValue = async (val: string) => {
-        if (val == "") {
+        if (val === "") {
             setBtcValue("");
             setSatsValue("")
         } else {
@@ -51,13 +79,14 @@ const Converter = () => {
         changeSatsValue(satsBalance?.toString() ?? "0")
     }
 
-    const checkAllowance = async () => {
+    const checkAllowance = useCallback(async () => {
         setIsLoading(true);
         if (btcValue === "" || btcValue === "0" || !injectedProvider) {
             setAllowanceApproved(true);
         } else {
             if (isBtcToSats) {
                 const allowance = await getAllowance(accountAddress, SATS_ADDRESS, WBTC_ADDRESS, injectedProvider);
+                console.log(allowance, "??")
                 if (BigNumber.from(allowance).lt(BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)))) {
                     setAllowanceApproved(false)
                 } else {
@@ -68,7 +97,7 @@ const Converter = () => {
             }
         }
         setIsLoading(false);
-    }
+    }, [accountAddress, btcValue, injectedProvider, isBtcToSats]);
 
     useEffect(() => {
         if (btcValue.length === 0) {
@@ -93,7 +122,7 @@ const Converter = () => {
         if (btcValue) {
             checkAllowance();
         }
-    }, [btcValue])
+    }, [btcValue, checkAllowance])
 
     const InputWbtcElement = <InputWbtc 
         value={btcValue}
