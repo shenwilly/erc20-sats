@@ -1,4 +1,4 @@
-import { ethers, providers } from "ethers";
+import { BigNumber, ContractTransaction, ethers, providers, Signer } from "ethers";
 import { IERC20 } from "../types";
 import IERC20abi from "../contracts/abi/IERC20.json"
 
