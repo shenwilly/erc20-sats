@@ -12,7 +12,7 @@ import useWeb3 from "../../hooks/useWeb3";
 
 const Converter = () => {
     const { accountAddress, injectedProvider } = useWeb3();
-    const { wbtcBalance, satsBalance, handleApprove } = useSats();
+    const { wbtcBalance, satsBalance, handleApprove, handleMint } = useSats();
     const [ btcValue, setBtcValue ] = useState("");
     const [ satsValue, setSatsValue ] = useState("");
     const [ isBtcToSats, setIsBtcToSats ] = useState<boolean>(true);
@@ -25,17 +25,11 @@ const Converter = () => {
             return;
 
         if (allowanceApproved) {
-            // handleMint(
-            //     SATS_ADDRESS, 
-            //     WBTC_ADDRESS, 
-            //     BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
-            //     async (tx: ContractTransaction) => {
-            //         // const txReceipt = await injectedProvider.getTransactionReceipt(tx.hash);
-            //         // if (txReceipt && txReceipt.blockNumber) {
-            //         //     checkAllowance()
-            //         // }                    
-            //     }
-            // );
+            handleMint(
+                accountAddress, 
+                BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                () => {}
+            );
         } else {
             handleApprove(
                 SATS_ADDRESS, 

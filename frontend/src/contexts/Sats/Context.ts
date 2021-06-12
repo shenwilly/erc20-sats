@@ -5,6 +5,7 @@ const Context = createContext<ContextValues>({
     satsBalance: undefined,
     wbtcBalance: undefined,
     handleApprove: () => {},
+    handleMint: () => {},
 });
 
 export default Context;

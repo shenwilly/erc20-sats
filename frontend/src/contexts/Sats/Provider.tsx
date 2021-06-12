@@ -2,7 +2,8 @@ import { BigNumber, providers } from "ethers";
 import React, { useCallback, useState, useEffect } from "react";
 import { SATS_ADDRESS, SATS_DECIMALS, WBTC_ADDRESS, WBTC_DECIMALS } from "../../constants";
 import useWeb3 from "../../hooks/useWeb3";
-import { approve, getAllowance, getBalance } from "../../utils/web3";
+import { mint } from "../../utils/sats";
+import { approve, getBalance } from "../../utils/web3";
 import Context from "./Context";
 
 const Provider: React.FC = ({ children }) => {
@@ -16,8 +17,8 @@ const Provider: React.FC = ({ children }) => {
             await getBalance(userAddress, WBTC_ADDRESS, provider),
             await getBalance(userAddress, SATS_ADDRESS, provider),
         ]);
-        setSatsBalance(BigNumber.from(balances[0]).div(BigNumber.from(10).pow(SATS_DECIMALS)));
-        setWbtcBalance(BigNumber.from(balances[1]).div(BigNumber.from(10).pow(WBTC_DECIMALS)));
+        setWbtcBalance(BigNumber.from(balances[0]).div(BigNumber.from(10).pow(WBTC_DECIMALS)));
+        setSatsBalance(BigNumber.from(balances[1]).div(BigNumber.from(10).pow(SATS_DECIMALS)));
     }, [setSatsBalance, setWbtcBalance]);
 
     const handleApprove = useCallback(async (
@@ -26,12 +27,26 @@ const Provider: React.FC = ({ children }) => {
         amount: string,
         onFinish: Function
     ) => {
-        if (!injectedProvider)
-            return;
-            
+        if (!injectedProvider) return;
         approve(
             spenderAddress, 
             tokenAddress, 
+            amount, 
+            injectedProvider, 
+            injectedProvider.getSigner(0)
+        ).then((tx) => {
+            onFinish(tx);
+        });
+    }, [injectedProvider]);
+
+    const handleMint = useCallback(async (
+        userAddress: string,  
+        amount: string,
+        onFinish: Function
+    ) => {
+        if (!injectedProvider) return;
+        mint(
+            userAddress,  
             amount, 
             injectedProvider, 
             injectedProvider.getSigner(0)
@@ -54,6 +69,7 @@ const Provider: React.FC = ({ children }) => {
                 satsBalance,
                 wbtcBalance,
                 handleApprove,
+                handleMint,
             }}>
             {children}
         </Context.Provider>
