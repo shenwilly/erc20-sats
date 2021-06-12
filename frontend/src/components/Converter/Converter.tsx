@@ -70,15 +70,24 @@ const Converter = () => {
         setIsLoading(false);
     }
 
-    const convertDisabled = () => {
-        if (btcValue.length == 0)
-            return true;
+    useEffect(() => {
+        if (btcValue.length === 0) {
+            setValidationErrorMsg("INPUT AMOUNT");
+            return;
+        }
 
-        if (BigNumber.from(btcValue).lte(0))
-            return true;
+        if (BigNumber.from(btcValue).lte(0)) {
+            setValidationErrorMsg("INPUT POSITIVE AMOUNT");
+            return;
+        }
+        
+        if (BigNumber.from(btcValue).gt(wbtcBalance || BigNumber.from(0))) {
+            setValidationErrorMsg("AMOUNT TOO LARGE");
+            return;
+        }
 
-        return false;
-    }
+        setValidationErrorMsg("");
+    }, [btcValue, wbtcBalance])
     
     useEffect(() => {
         if (btcValue) {
@@ -117,9 +126,9 @@ const Converter = () => {
             <Button size="lg" colorScheme="orange" mt="60px" minW="200px" 
                 onClick={handleClick}
                 isLoading={isLoading}
-                isDisabled={convertDisabled()}>
-                {convertDisabled()
-                    ? "INVALID INPUT"
+                isDisabled={validationErrorMsg.length > 0}>
+                {validationErrorMsg.length > 0
+                    ? validationErrorMsg
                     : allowanceApproved
                         ? isBtcToSats 
                             ? "MINT $SATS"
