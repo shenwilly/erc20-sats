@@ -40,3 +40,15 @@ export const getBalance = async (
     }
 };
   
+export const approve = async (
+    spenderAddress: string,
+    tokenAddress: string, 
+    amount: string,
+    provider: providers.Provider,
+    signer: Signer,
+): Promise<ContractTransaction> => {
+    const tokenContract = getERC20(tokenAddress, provider);
+    const tx = await tokenContract.connect(signer).approve(spenderAddress, BigNumber.from(amount))
+    return tx;
+};
+  
