@@ -1,14 +1,14 @@
 import { BigNumber, providers } from "ethers";
 import React, { useCallback, useState, useEffect } from "react";
-import { SATS_ADDRESS, SATS_DECIMALS, WBTC_ADDRESS, WBTC_DECIMALS } from "../../constants";
+import { SATS_ADDRESS, WBTC_ADDRESS } from "../../constants";
 import useWeb3 from "../../hooks/useWeb3";
 import { mint, burn } from "../../utils/sats";
 import { approve, getBalance } from "../../utils/web3";
 import Context from "./Context";
 
 const Provider: React.FC = ({ children }) => {
-    const [satsBalance, setSatsBalance] = useState<BigNumber>();
-    const [wbtcBalance, setWbtcBalance] = useState<BigNumber>();
+    const [satsBalance, setSatsBalance] = useState<BigNumber>(BigNumber.from(0));
+    const [wbtcBalance, setWbtcBalance] = useState<BigNumber>(BigNumber.from(0));
     const { accountAddress, injectedProvider } = useWeb3();
 
     const fetchBalances = useCallback(
@@ -17,8 +17,8 @@ const Provider: React.FC = ({ children }) => {
             await getBalance(userAddress, WBTC_ADDRESS, provider),
             await getBalance(userAddress, SATS_ADDRESS, provider),
         ]);
-        setWbtcBalance(BigNumber.from(balances[0]).div(BigNumber.from(10).pow(WBTC_DECIMALS)));
-        setSatsBalance(BigNumber.from(balances[1]).div(BigNumber.from(10).pow(SATS_DECIMALS)));
+        setWbtcBalance(BigNumber.from(balances[0]));
+        setSatsBalance(BigNumber.from(balances[1]));
     }, [setSatsBalance, setWbtcBalance]);
 
     const handleApprove = useCallback(async (
@@ -27,7 +27,7 @@ const Provider: React.FC = ({ children }) => {
     ) => {
         if (!injectedProvider || !accountAddress) return;
         approve(
-            accountAddress, 
+            SATS_ADDRESS, 
             WBTC_ADDRESS, 
             amount, 
             injectedProvider, 
