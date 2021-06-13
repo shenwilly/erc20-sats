@@ -18,7 +18,9 @@ function App() {
       <BodyWrapper maxW="container.xl" display="flex" alignItems="start" justifyContent="center">
         <Stack alignItems="center">
           <BtcSatsExchangeRateBox />
-          <Converter />
+          <Box width={['90vw', '60vw', '40vw']}>
+            <Converter />
+          </Box>
         </Stack>
       </BodyWrapper>
       <FooterWrapper>
