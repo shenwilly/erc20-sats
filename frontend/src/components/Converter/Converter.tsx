@@ -12,7 +12,7 @@ import useWeb3 from "../../hooks/useWeb3";
 
 const Converter = () => {
     const { accountAddress, injectedProvider } = useWeb3();
-    const { wbtcBalance, satsBalance, handleApprove, handleMint } = useSats();
+    const { wbtcBalance, satsBalance, handleApprove, handleMint, handleBurn } = useSats();
     const [ btcValue, setBtcValue ] = useState("");
     const [ satsValue, setSatsValue ] = useState("");
     const [ isBtcToSats, setIsBtcToSats ] = useState<boolean>(true);
@@ -24,24 +24,28 @@ const Converter = () => {
         if (!injectedProvider)
             return;
 
-        if (allowanceApproved) {
-            handleMint(
-                accountAddress, 
+        if (isBtcToSats) {
+            handleBurn(
                 BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
                 () => {}
             );
         } else {
-            handleApprove(
-                SATS_ADDRESS, 
-                WBTC_ADDRESS, 
-                BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
-                async (tx: ContractTransaction) => {
-                    const txReceipt = await injectedProvider.getTransactionReceipt(tx.hash);
-                    if (txReceipt && txReceipt.blockNumber) {
-                        checkAllowance()
-                    }                    
-                }
-            );
+            if (allowanceApproved) {
+                handleMint(
+                    BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                    () => {}
+                );
+            } else {
+                handleApprove(
+                    BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                    async (tx: ContractTransaction) => {
+                        const txReceipt = await injectedProvider.getTransactionReceipt(tx.hash);
+                        if (txReceipt && txReceipt.blockNumber) {
+                            checkAllowance()
+                        }                    
+                    }
+                );
+            }
         }
     }
 
@@ -133,12 +137,12 @@ const Converter = () => {
     return (
         <Box textAlign="center" py="5" px="4" 
             borderWidth="2px" borderColor="gray.200" borderRadius="10" 
-            width="40vw" display="flex-column">
+            display="flex-column">
             {isBtcToSats
                 ? InputWbtcElement
                 : InputSatsElement}
 
-            <SwapButton p="2" my="4" variant="ghost" onClick={() => setIsBtcToSats(!isBtcToSats)}>
+            <SwapButton p="2" mb="4" mt="8" variant="ghost" onClick={() => setIsBtcToSats(!isBtcToSats)}>
                 <MdSwapVert size="1.5em"/>
             </SwapButton>
             

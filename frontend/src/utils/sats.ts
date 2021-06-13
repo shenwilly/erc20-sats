@@ -20,3 +20,14 @@ export const mint = async (
     return tx;
 };
   
+export const burn = async (
+    userAddress: string,
+    amount: string,
+    provider: providers.Provider,
+    signer: Signer,
+): Promise<ContractTransaction> => {
+    const sats = getSats(provider);
+    const tx = await sats.connect(signer).satsToWbtc(userAddress, BigNumber.from(amount))
+    return tx;
+};
+  

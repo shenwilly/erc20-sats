@@ -2,7 +2,7 @@ import { BigNumber, providers } from "ethers";
 import React, { useCallback, useState, useEffect } from "react";
 import { SATS_ADDRESS, SATS_DECIMALS, WBTC_ADDRESS, WBTC_DECIMALS } from "../../constants";
 import useWeb3 from "../../hooks/useWeb3";
-import { mint } from "../../utils/sats";
+import { mint, burn } from "../../utils/sats";
 import { approve, getBalance } from "../../utils/web3";
 import Context from "./Context";
 
@@ -22,38 +22,50 @@ const Provider: React.FC = ({ children }) => {
     }, [setSatsBalance, setWbtcBalance]);
 
     const handleApprove = useCallback(async (
-        spenderAddress: string, 
-        tokenAddress: string, 
         amount: string,
         onFinish: Function
     ) => {
-        if (!injectedProvider) return;
+        if (!injectedProvider || !accountAddress) return;
         approve(
-            spenderAddress, 
-            tokenAddress, 
+            accountAddress, 
+            WBTC_ADDRESS, 
             amount, 
             injectedProvider, 
             injectedProvider.getSigner(0)
         ).then((tx) => {
             onFinish(tx);
         });
-    }, [injectedProvider]);
+    }, [injectedProvider, accountAddress]);
 
     const handleMint = useCallback(async (
-        userAddress: string,  
         amount: string,
         onFinish: Function
     ) => {
-        if (!injectedProvider) return;
+        if (!injectedProvider || !accountAddress) return;
         mint(
-            userAddress,  
+            accountAddress,  
             amount, 
             injectedProvider, 
             injectedProvider.getSigner(0)
         ).then((tx) => {
             onFinish(tx);
         });
-    }, [injectedProvider]);
+    }, [injectedProvider, accountAddress]);
+
+    const handleBurn = useCallback(async (
+        amount: string,
+        onFinish: Function
+    ) => {
+        if (!injectedProvider || !accountAddress) return;
+        burn(
+            accountAddress,  
+            amount, 
+            injectedProvider, 
+            injectedProvider.getSigner(0)
+        ).then((tx) => {
+            onFinish(tx);
+        });
+    }, [injectedProvider, accountAddress]);
     
     useEffect(() => {
         if (accountAddress && injectedProvider) {
@@ -70,6 +82,7 @@ const Provider: React.FC = ({ children }) => {
                 wbtcBalance,
                 handleApprove,
                 handleMint,
+                handleBurn
             }}>
             {children}
         </Context.Provider>

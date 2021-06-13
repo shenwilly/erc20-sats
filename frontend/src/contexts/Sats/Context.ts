@@ -6,6 +6,7 @@ const Context = createContext<ContextValues>({
     wbtcBalance: undefined,
     handleApprove: () => {},
     handleMint: () => {},
+    handleBurn: () => {},
 });
 
 export default Context;
