@@ -9,6 +9,7 @@ import { BigNumber, ContractTransaction } from "ethers";
 import { getAllowance } from "../../utils/web3";
 import { SATS_ADDRESS, WBTC_ADDRESS } from "../../constants";
 import useWeb3 from "../../hooks/useWeb3";
+import { btcStringToBN, btcToSats, satsToBtc } from "../../utils/sats";
 
 const Converter = () => {
     const { accountAddress, injectedProvider } = useWeb3();
@@ -55,7 +56,12 @@ const Converter = () => {
             setSatsValue("")
         } else {
             setBtcValue(val);
-            setSatsValue(BigNumber.from(val).mul(BigNumber.from(10).pow(8)).toString()) //temp
+
+            try {
+                setSatsValue(btcToSats(val))
+            } catch (error) {
+                setSatsValue("")
+            }
         }
     }
 
@@ -65,7 +71,12 @@ const Converter = () => {
             setSatsValue("")
         } else {
             setSatsValue(val);
-            setBtcValue(BigNumber.from(val).div(BigNumber.from(10).pow(8)).toString()) //temp
+
+            try {
+                setBtcValue(satsToBtc(val))
+            } catch (error) {
+                setBtcValue("")
+            }
         }
     }
 
@@ -79,21 +90,27 @@ const Converter = () => {
 
     const checkAllowance = useCallback(async () => {
         setIsLoading(true);
+
+        let approved = false;
         if (btcValue === "" || btcValue === "0" || !injectedProvider) {
-            setAllowanceApproved(true);
+            approved = true;
         } else {
             if (isBtcToSats) {
-                const allowance = await getAllowance(accountAddress, SATS_ADDRESS, WBTC_ADDRESS, injectedProvider);
-                console.log(allowance, "??")
-                if (BigNumber.from(allowance).lt(BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)))) {
-                    setAllowanceApproved(false)
-                } else {
-                    setAllowanceApproved(true)
+                try {
+                    const btcAmount = btcStringToBN(btcValue)
+                    const allowance = await getAllowance(accountAddress, SATS_ADDRESS, WBTC_ADDRESS, injectedProvider);
+                    if (BigNumber.from(allowance).gte(btcAmount)) {
+                        approved = true
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
             } else {
-                setAllowanceApproved(true)
+                approved = true
             }
         }
+        setAllowanceApproved(approved);
+
         setIsLoading(false);
     }, [accountAddress, btcValue, injectedProvider, isBtcToSats]);
 
@@ -103,18 +120,35 @@ const Converter = () => {
             return;
         }
 
-        if (BigNumber.from(btcValue).lte(0)) {
+        if (btcValue.length >= 0 && satsValue.length === 0) {
+            setValidationErrorMsg("INVALID WBTC AMOUNT");
+            return;
+        }
+
+        if (satsValue.length >= 0 && btcValue.length === 0) {
+            setValidationErrorMsg("INVALID SATS AMOUNT");
+            return;
+        }
+
+        let btcAmount = BigNumber.from(0);
+        try {
+            btcAmount = btcStringToBN(btcValue)
+        } catch (error) {
+            console.log(error)
+        }
+
+        if (btcAmount.lte(0)) {
             setValidationErrorMsg("INPUT POSITIVE AMOUNT");
             return;
         }
         
-        if (BigNumber.from(btcValue).gt(wbtcBalance || BigNumber.from(0))) {
+        if (btcAmount.gt(wbtcBalance || BigNumber.from(0))) {
             setValidationErrorMsg("AMOUNT TOO LARGE");
             return;
         }
 
         setValidationErrorMsg("");
-    }, [btcValue, wbtcBalance])
+    }, [btcValue, satsValue, wbtcBalance])
     
     useEffect(() => {
         if (btcValue) {
