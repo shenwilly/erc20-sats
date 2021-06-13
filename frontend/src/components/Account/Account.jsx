@@ -1,20 +1,11 @@
 import { useEffect, useState } from "react";
 import { formatEther } from "@ethersproject/units";
-import { Button, Box, Flex, Text } from "@chakra-ui/react"
+import { Button, Box, Flex, Text, useDisclosure } from "@chakra-ui/react"
+import AccountModal from "../AccountModal";
 
-const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, account }) => {
-    const [ address, setAddress ] = useState("");
+const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider, address }) => {
     const [ balance, setBalance ] = useState("-");
-
-    useEffect(() => {
-        const fetchAddress = async (account) => {
-          setAddress(await account.getAddress());
-        }
-
-        if (account) {
-            fetchAddress(account);
-        }
-    }, [account]);
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     useEffect(() => {
         const getBalance = async (provider) => {
@@ -30,26 +21,7 @@ const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider
             setBalance("-")
         }
     }, [injectedProvider, address])
-
-    let modalButton = "";
-    if (web3Modal) {
-        if (web3Modal.cachedProvider) {
-            modalButton = (
-                <Button
-                    onClick={logoutOfWeb3Modal}
-                    bg="orange"
-                    >Disconnect</Button>
-            );
-        } else {
-            modalButton = (
-                <Button
-                    onClick={loadWeb3Modal}
-                    bg="orange"
-                    >Connect to Wallet</Button>
-            );
-        }
-    }
-
+    
     function truncateBalance(str, maxDecimalDigits) {
         if (str.includes('.')) {
             const parts = str.split('.');
@@ -65,7 +37,7 @@ const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider
     return (
         <Flex align="center">
             {injectedProvider &&
-                (<Box display="flex" bg="orange" p="2" borderRadius="8">
+                (<Box display="flex" bg="orange" p="2" borderRadius="8" onClick={onOpen} cursor="pointer">
                     <Box px="2">
                         <Text>
                             {balance} ETH
@@ -79,8 +51,17 @@ const Account = ({ web3Modal, loadWeb3Modal, logoutOfWeb3Modal, injectedProvider
                 </Box>)
             }
             <Box ml="2">
-                {modalButton}
+                {web3Modal && !web3Modal.cachedProvider &&
+                    <Button
+                        onClick={loadWeb3Modal}
+                        bg="orange"
+                    >Connect to Wallet</Button>}
             </Box>
+            <AccountModal 
+                isOpen={isOpen} 
+                onClose={onClose}
+                logoutOfWeb3Modal={logoutOfWeb3Modal}
+                address={address} />
         </Flex>
     );
 };
