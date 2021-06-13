@@ -8,18 +8,16 @@ const AccountModal = ({ isOpen, onClose, logoutOfWeb3Modal, address }) => {
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader />
+                <ModalHeader>
+                    <Text fontSize="sm">{address}</Text>
+                </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody p="5">
-                    <SimpleGrid columns="1" spacing="5">
-                        <Center>
-                            <Text fontSize="sm">{address}</Text>
-                        </Center>
-                        <Button
-                            onClick={logoutOfWeb3Modal}
-                            bg="orange"
-                            >Disconnect</Button>
-                    </SimpleGrid>
+                    <Button
+                        isFullWidth={true}
+                        onClick={logoutOfWeb3Modal}
+                        bg="orange"
+                        >Disconnect</Button>
                 </ModalBody>
             </ModalContent>
         </Modal>
