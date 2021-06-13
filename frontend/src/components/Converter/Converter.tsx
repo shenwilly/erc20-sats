@@ -7,9 +7,10 @@ import { useCallback, useEffect, useState } from "react";
 import useSats from "../../hooks/useSats";
 import { BigNumber, ContractTransaction } from "ethers";
 import { getAllowance } from "../../utils/web3";
-import { SATS_ADDRESS, WBTC_ADDRESS } from "../../constants";
+import { SATS_ADDRESS, SATS_DECIMALS, WBTC_ADDRESS, WBTC_DECIMALS } from "../../constants";
 import useWeb3 from "../../hooks/useWeb3";
-import { btcStringToBN, btcToSats, satsToBtc } from "../../utils/sats";
+import { btcStringToBN, btcToSats, satsStringToBN, satsToBtc } from "../../utils/sats";
+import { formatUnits } from "ethers/lib/utils";
 
 const Converter = () => {
     const { accountAddress, injectedProvider } = useWeb3();
@@ -24,21 +25,23 @@ const Converter = () => {
     const handleClick = async () => {
         if (!injectedProvider)
             return;
-
-        if (isBtcToSats) {
+        
+        if (!isBtcToSats) {
+            const satsAmount = satsStringToBN(satsValue)
             handleBurn(
-                BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                satsAmount.toString(),
                 () => {}
             );
         } else {
+            const btcAmount = btcStringToBN(btcValue)
             if (allowanceApproved) {
                 handleMint(
-                    BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                    btcAmount.toString(),
                     () => {}
                 );
             } else {
                 handleApprove(
-                    BigNumber.from(btcValue).mul(BigNumber.from(10).pow(8)).toString(),
+                    btcAmount.toString(),
                     async (tx: ContractTransaction) => {
                         const txReceipt = await injectedProvider.getTransactionReceipt(tx.hash);
                         if (txReceipt && txReceipt.blockNumber) {
@@ -60,6 +63,7 @@ const Converter = () => {
             try {
                 setSatsValue(btcToSats(val))
             } catch (error) {
+                console.log(error)
                 setSatsValue("")
             }
         }
@@ -75,17 +79,20 @@ const Converter = () => {
             try {
                 setBtcValue(satsToBtc(val))
             } catch (error) {
+                console.log(error)
                 setBtcValue("")
             }
         }
     }
 
     const handleClickMaxBTC = () => {
-        changeBtcValue(wbtcBalance?.toString() ?? "0")
+        const value = formatUnits(wbtcBalance, WBTC_DECIMALS) ?? "0"
+        changeBtcValue(value.replace(",", "."))
     }
 
     const handleClickMaxSats = () => {
-        changeSatsValue(satsBalance?.toString() ?? "0")
+        const value = formatUnits(satsBalance, SATS_DECIMALS) ?? "0"
+        changeSatsValue(value.replace(".0",""))
     }
 
     const checkAllowance = useCallback(async () => {
@@ -130,19 +137,19 @@ const Converter = () => {
             return;
         }
 
-        let btcAmount = BigNumber.from(0);
-        try {
-            btcAmount = btcStringToBN(btcValue)
-        } catch (error) {
-            console.log(error)
-        }
-
-        if (btcAmount.lte(0)) {
+        const btcAmount = btcStringToBN(btcValue)
+        const satsAmount = satsStringToBN(satsValue)
+        if (btcAmount.lte(0) || btcAmount.lte(0)) {
             setValidationErrorMsg("INPUT POSITIVE AMOUNT");
             return;
         }
         
-        if (btcAmount.gt(wbtcBalance || BigNumber.from(0))) {
+        if (isBtcToSats && btcAmount.gt(wbtcBalance || BigNumber.from(0))) {
+            setValidationErrorMsg("AMOUNT TOO LARGE");
+            return;
+        }
+
+        if (!isBtcToSats && satsAmount.gt(satsBalance || BigNumber.from(0))) {
             setValidationErrorMsg("AMOUNT TOO LARGE");
             return;
         }
@@ -159,13 +166,13 @@ const Converter = () => {
     const InputWbtcElement = <InputWbtc 
         value={btcValue}
         onChange={e => changeBtcValue(e.target.value)}
-        balanceText={`${wbtcBalance?.toNumber().toLocaleString() || '-'} WBTC`}
+        balanceText={`${formatUnits(wbtcBalance, WBTC_DECIMALS).toLocaleString() || '-'} WBTC`}
         onClickText={handleClickMaxBTC} />;
 
     const InputSatsElement = <InputSats 
         value={satsValue}
         onChange={e => changeSatsValue(e.target.value)}
-        balanceText={`${satsBalance?.toNumber().toLocaleString() || '-'} SATS`} 
+        balanceText={`${formatUnits(satsBalance, SATS_DECIMALS).toLocaleString() || '-'} SATS`} 
         onClickText={handleClickMaxSats} />
 
     return (

@@ -1,7 +1,7 @@
 import { BigNumber, ContractTransaction, ethers, providers, Signer } from "ethers";
 import { SatsV1 } from "../types";
 import Satsabi from "../contracts/abi/SatsV1.json"
-import { SATS_ADDRESS, WBTC_DECIMALS, BTC_TO_SATS_RATE } from "../constants";
+import { SATS_ADDRESS, WBTC_DECIMALS, BTC_TO_SATS_RATE, SATS_DECIMALS } from "../constants";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 export const getSats = (
@@ -35,8 +35,27 @@ export const burn = async (
 };
   
 export const btcStringToBN = (value: string): BigNumber => {
-    if (value.length === 0) return BigNumber.from(9);
-    return parseUnits(value, WBTC_DECIMALS);
+    let btcBN;
+    try {
+        if (value.length === 0) return BigNumber.from(0);
+        btcBN = parseUnits(value, WBTC_DECIMALS);
+    } catch (error) {
+        console.log(error)
+        btcBN = BigNumber.from(0)
+    }
+    return btcBN
+}
+
+export const satsStringToBN = (value: string): BigNumber => {
+    let satsBN;
+    try {
+        if (value.length === 0) return BigNumber.from(0);
+        satsBN = parseUnits(value, SATS_DECIMALS);
+    } catch (error) {
+        console.log(error)
+        satsBN = BigNumber.from(0)
+    }
+    return satsBN
 }
   
 export const btcToSats = (value: string): string => {
