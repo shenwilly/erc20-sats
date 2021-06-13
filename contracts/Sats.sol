@@ -7,6 +7,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract SatsV1 is ERC20 {
     IERC20 wbtc;
+    uint btcToSatsRate = 10 ** 8;
 
     constructor(address _wbtc) ERC20("Sats", "SATS") {
         wbtc = IERC20(_wbtc);
@@ -18,12 +19,12 @@ contract SatsV1 is ERC20 {
     
     function wbtcToSats(address receiver, uint256 btcAmount) external {
         require(wbtc.transferFrom(msg.sender, address(this), btcAmount), "Transfer WBTC failed");
-        uint satsAmount = btcAmount * (10 ** decimals());
+        uint satsAmount = btcAmount * btcToSatsRate * (10 ** decimals());
         _mint(receiver, satsAmount);
     }
 
     function satsToWbtc(address receiver, uint256 satsAmount) external {
-        uint btcAmount = satsAmount / (10 ** decimals());
+        uint btcAmount = satsAmount / (btcToSatsRate * (10 ** decimals()));
         _burn(msg.sender, satsAmount);
         require(wbtc.transfer(receiver, btcAmount), "Transfer WBTC failed");
     }
