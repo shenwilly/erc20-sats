@@ -8,7 +8,6 @@ async function main() {
   // If we had constructor arguments, they would be passed into deploy()
   let contract = await factory.deploy(WBTC_ADDRESS_MAINNET, {
     gasPrice: 10000000000,
-    nonce: 51
   });
 
   // The address the Contract WILL have once mined
