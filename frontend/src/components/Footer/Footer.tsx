@@ -6,13 +6,23 @@ const Footer = () => {
 
     return (
         <Container maxW="container.xl">
-            <Flex align="center">
+            <Flex align="center" pr="1">
                 <Button onClick={toggleColorMode} p="2" size="md" variant="ghost">
                     {colorMode === "light" 
                         ? <FaSun />
                         : <FaMoon />}
                 </Button>
                 <Spacer/>
+                <Button onClick={toggleColorMode} p="2" size="md" variant="ghost">
+                    {colorMode === "light" 
+                        ? <FaSun />
+                        : <FaMoon />}
+                </Button>
+                <Button onClick={toggleColorMode} p="2" size="md" variant="ghost">
+                    {colorMode === "light" 
+                        ? <FaSun />
+                        : <FaMoon />}
+                </Button>
             </Flex>
         </Container>
     );

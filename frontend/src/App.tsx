@@ -45,6 +45,7 @@ const BodyWrapper = styled(Container)`
 `;
 
 const FooterWrapper = styled.div`
+  width: 100vw;
   position: fixed;
   bottom: 15px;
   left: 0;

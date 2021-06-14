@@ -1,16 +1,15 @@
+import { useCallback, useEffect, useState } from "react";
 import { Button, Box } from "@chakra-ui/react"
 import { MdSwapVert } from "react-icons/md"
-import styled from "styled-components";
-import InputWbtc from "../InputCustom/variants/InputWbtc"
-import InputSats from "../InputCustom/variants/InputSats"
-import { useCallback, useEffect, useState } from "react";
-import useSats from "../../hooks/useSats";
 import { BigNumber, ContractTransaction } from "ethers";
 import { getAllowance } from "../../utils/web3";
 import { SATS_ADDRESS, SATS_DECIMALS, WBTC_ADDRESS, WBTC_DECIMALS } from "../../constants";
-import useWeb3 from "../../hooks/useWeb3";
 import { btcStringToBN, btcToSats, satsStringToBN, satsToBtc } from "../../utils/sats";
 import { formatUnits } from "ethers/lib/utils";
+import useWeb3 from "../../hooks/useWeb3";
+import useSats from "../../hooks/useSats";
+import InputWbtc from "../InputCustom/variants/InputWbtc"
+import InputSats from "../InputCustom/variants/InputSats"
 
 const Converter = () => {
     const { accountAddress, injectedProvider } = useWeb3();
@@ -155,7 +154,7 @@ const Converter = () => {
         }
 
         setValidationErrorMsg("");
-    }, [btcValue, satsValue, wbtcBalance])
+    }, [btcValue, satsValue, wbtcBalance, satsBalance, isBtcToSats])
     
     useEffect(() => {
         if (btcValue) {
@@ -183,9 +182,9 @@ const Converter = () => {
                 ? InputWbtcElement
                 : InputSatsElement}
 
-            <SwapButton p="2" mb="4" mt="8" variant="ghost" onClick={() => setIsBtcToSats(!isBtcToSats)}>
+            <Button p="2" mb="4" mt="8" variant="ghost" onClick={() => setIsBtcToSats(!isBtcToSats)}>
                 <MdSwapVert size="1.5em"/>
-            </SwapButton>
+            </Button>
             
             {!isBtcToSats
                 ? InputWbtcElement
@@ -207,9 +206,5 @@ const Converter = () => {
         </Box>
     );
 };
-
-const SwapButton = styled(Button)`
-
-`;
 
 export default Converter;

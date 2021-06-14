@@ -1,6 +1,6 @@
 import { 
     Modal, ModalContent, ModalOverlay, ModalCloseButton, ModalHeader, ModalBody, 
-    Text, Button, SimpleGrid, Center
+    Text, Button
 } from "@chakra-ui/react"
 
 const AccountModal = ({ isOpen, onClose, logoutOfWeb3Modal, address }) => {
